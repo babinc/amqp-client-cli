@@ -1,0 +1,22 @@
+[package]
+name = "amqp-client-cli"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+amiquip = "0.4.2"
+native-tls = "0.2"
+mio = "0.6"
+serde = "1.0.136"
+serde_derive = "1.0.136"
+serde_json = "1.0.79"
+tui = "0.17.0"
+crossterm = "0.22"
+crossbeam = "0.8.1"
+chrono = "0.4.1"
+anyhow = "1.0.56"
+bevy_reflect = "0.6.0"
+itertools = "0.10.3"
+directories = "4.0.1"
