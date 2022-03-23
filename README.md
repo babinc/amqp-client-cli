@@ -1,4 +1,4 @@
-#amqp-client-cli
+# amqp-client-cli
 ***
 ![](https://s3.us-west-2.amazonaws.com/carmanbabin.com/amqp-client-cli/amqp-client-cli.gif)
 
@@ -13,11 +13,13 @@ Why Rust:
  - Good error handling
  - I enjoy it more than other languages 😁
 
-##Windows Installer
+## Windows Installer
 [Windows Installer Download](https://s3.us-west-2.amazonaws.com/carmanbabin.com/amqp-client-cli/amqp-client-cli-0.1.0-setup.exe)
-##Linux Installer
+
+## Linux Installer
 Coming Soon
-##Config File
+
+## Config File
 The program must have a valid configuration file in order to run.
 
 Upon starting ```amqp-client-cli``` will look in the following locations for a configuration file.
@@ -35,7 +37,7 @@ Upon starting ```amqp-client-cli``` will look in the following locations for a c
     - Windows: ```C:\Users\Carman\amqp-client-cli.json```
     - macOS:   ```/Users/Carman/amqp-client-cli.json```
 
-##Config File Example
+## Config File Example
 ```json
 {
   "host": "127.0.0.1",
@@ -74,20 +76,20 @@ Upon starting ```amqp-client-cli``` will look in the following locations for a c
 }
 
 ```
-##Options
+## Options
 The user can set options for an exchange by pressing the ```O``` key. Each exchange has its own set of options. Or the
 user can set the options in the config file. When the program is exitited the options that were set while using the
 program will be written to the configuration file.
-##Scrolling
+## Scrolling
 While using the program the user can press the ```P``` key to pause the program. Once the program is paused no more
 messages will automatically appear in the Messages Window. Then the user can press the Up and Down arrow keys or the Page
 Up and Page Down keys to scroll the text in the messages window.
-##Logging
+## Logging
 The user can either set the logging parameter in the Configuration File or do it from within the program using the Options
 Window. Once a log file path is set the program will write out the messages for the exchange that it was set for to the file. The user can also
 add multiple exchanges to a single log file in order to log more than one exchange to a single file. Or you can log them
 into separate files. Logs are written to the file once every second. 
-##TODO
+## TODO
   - Clean up and breakdown the UI Struct
   - Let users decide to color messages from certain exchanges
   - Unit Testing
