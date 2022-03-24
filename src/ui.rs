@@ -125,11 +125,11 @@ impl Ui {
         let content = match app.active_window {
             Windows::Main => {
                 match app.mode {
-                    Mode::Normal => " ↑ Select | ↓ Select | → Width | ← Width | (Enter) select | (F)ilter | (L)ogs | (O)ptions | (P)ause | (S)ave | (Esc) (Q)uit |",
+                    Mode::Normal => " ↑ Select | ↓ Select | → Width | ← Width | (Enter) select | (F)ilter | (L)ogs | (E)dit | (P)ause | (S)ave | (Esc) (Q)uit |",
                     Mode::Scroll => " ↑ Scroll Up | ↓ Scroll Down | (Pg Up) Page Up | (Pg Dn) Page Down | → Width | ← Width | (L)ogs | (P)ause | (Esc) (Q)uit |"
                 }
             }
-            Windows::Options => " ↑ Select | ↓ Select | (Esc) Close Window | (Enter) Change Value |",
+            Windows::Options => " ↑ Select | ↓ Select | (Esc) Close Window | (E)dit Value | (Enter) Apply Changes |",
             Windows::OptionsStringInput => " (Esc) Close Window | (Enter) Change Value |",
             Windows::SelectionFilter => " (Esc) Close Window | (Enter) Change Value |",
             Windows::MultiSelectInput => " ↑ Select | ↓ Select | (Esc) Close Window | (Enter) Change Value |",

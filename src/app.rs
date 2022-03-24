@@ -136,7 +136,7 @@ impl App {
 
                                     self.ampq.change_subscription(&selected_item, selected_id);
                                 },
-                                KeyCode::Char('o') => {
+                                KeyCode::Char('e') => {
                                     self.active_window = Windows::Options;
                                     let selected_id = ui.get_selected_item_id();
                                     let selected_item = self.config.items.iter().find(|x| x.id == selected_id).unwrap();
@@ -150,6 +150,9 @@ impl App {
                                     crate::amqp::PAUSE.store(new_value, Ordering::SeqCst);
                                 },
                                 KeyCode::Char('f') => {
+                                    self.active_window = Windows::SelectionFilter;
+                                }
+                                KeyCode::Char('/') => {
                                     self.active_window = Windows::SelectionFilter;
                                 }
                                 KeyCode::Char('s') => {
@@ -195,16 +198,13 @@ impl App {
                 Windows::Options => match key.code {
                     KeyCode::Esc => {
                         self.active_window = Windows::Main;
-                        let selected_id = ui.get_selected_item_id();
-                        let selected_item = self.config.items.iter_mut().find(|x| x.id == selected_id).unwrap();
-                        *selected_item = ui.options_exchange.clone();
                         ui.hide_options_popup();
                     }
                     KeyCode::Down => ui.options_index_down(),
                     KeyCode::Up => ui.options_index_up(),
                     KeyCode::Char('j') => ui.options_index_down(), //VIM binding
                     KeyCode::Char('k') => ui.options_index_up(), //VIM binding
-                    KeyCode::Enter => {
+                    KeyCode::Char('e') => {
                         match ui.options_change_value() {
                             EditType::None => {}
                             EditType::String(res) => {
@@ -216,6 +216,13 @@ impl App {
                                 ui.show_multi_select_input(res);
                             }
                         }
+                    },
+                    KeyCode::Enter => {
+                        self.active_window = Windows::Main;
+                        let selected_id = ui.get_selected_item_id();
+                        let selected_item = self.config.items.iter_mut().find(|x| x.id == selected_id).unwrap();
+                        *selected_item = ui.options_exchange.clone();
+                        ui.hide_options_popup();
                     },
                     _ => {}
                 }

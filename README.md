@@ -14,7 +14,7 @@ Why Rust:
  - I enjoy it more than other languages 😁
 
 ## Windows Installer
-[Windows Installer Download](https://s3.us-west-2.amazonaws.com/carmanbabin.com/amqp-client-cli/amqp-client-cli-0.1.0-setup.exe)
+[amqp-client-cli-0.1.2-setup.exe](https://s3.us-west-2.amazonaws.com/carmanbabin.com/amqp-client-cli/amqp-client-cli-0.1.2-setup.exe)
 
 ## Linux Installer
 Coming Soon
