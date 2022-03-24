@@ -76,9 +76,9 @@ Upon starting ```amqp-client-cli``` will look in the following locations for a c
 }
 
 ```
-## Options
-The user can set options for an exchange by pressing the ```O``` key. Each exchange has its own set of options. Or the
-user can set the options in the config file. When the program is exitited the options that were set while using the
+## Edit
+The user can set edit options for an exchange by pressing the ```E``` key. Each exchange has its own set of options. Or the
+user can set the options in the config file. When the program exits the options that were set while using the
 program will be written to the configuration file.
 ## Scrolling
 While using the program the user can press the ```P``` key to pause the program. Once the program is paused no more
