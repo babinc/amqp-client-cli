@@ -5,12 +5,31 @@ summary: CLI program for listening to messages on an AMQP message bus
 description: |
         CLI program for listening to messages on an AMQP Message bus
 grade: stable
-confinement: devmode # use 'strict' once you have the right plugs and slots
+confinement: strict
 
 architectures:
     - build-on: [amd64,i386]
 
 parts:
-    syzygy:
+    amqp-client-cli:
         plugin: rust
+        source-type: git
         source: https://github.com/babinc/amqp-client-cli
+        after: [openssl]
+        stage-packages:
+          - libssl-dev
+          - pkg-config
+
+    openssl:
+        plugin: nil
+        source: https://www.openssl.org/source/openssl-1.1.1f.tar.gz
+        build-packages:
+          - g++
+          - build-essential
+        override-build: |
+          echo "Building openssl 1.1.1f"
+          sudo ./config
+          sudo make
+          sudo make depend
+          sudo make install
+          sudo ln -sf /usr/local/ssl/bin/openssl `which openssl`
