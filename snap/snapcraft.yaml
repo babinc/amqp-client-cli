@@ -33,3 +33,7 @@ parts:
           sudo make depend
           sudo make install
           sudo ln -sf /usr/local/ssl/bin/openssl `which openssl`
+
+apps:
+  amqp-client-cli:
+    command: amqp-client-cli
