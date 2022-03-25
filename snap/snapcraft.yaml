@@ -10,6 +10,22 @@ confinement: strict
 architectures:
     - build-on: [amd64,i386]
 
+plugs:
+  dot-config-foo:
+    interface: personal-files
+    read:
+    - $HOME/.config/amqp-client-cli.json
+    - $HOME/amqp-client-cli.json
+    write:
+    - $HOME/.config/amqp-client-cli.json
+    - $HOME/amqp-client-cli.json
+
+
+apps:
+  amqp-client-cli:
+    command: bin/amqp-client-cli
+    plugs: [network]
+
 parts:
     amqp-client-cli:
         plugin: rust
@@ -33,7 +49,3 @@ parts:
           sudo make depend
           sudo make install
           sudo ln -sf /usr/local/ssl/bin/openssl `which openssl`
-
-apps:
-  amqp-client-cli:
-    command: amqp-client-cli

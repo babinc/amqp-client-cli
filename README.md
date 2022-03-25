@@ -22,7 +22,8 @@ If you have Cargo/Rust installed you can install the program with cargo using th
 [amqp-client-cli-0.1.2-setup.exe](https://s3.us-west-2.amazonaws.com/carmanbabin.com/amqp-client-cli/amqp-client-cli-0.1.2-setup.exe)
 
 ## Linux Installer
-Coming Soon
+
+```sudo snap install amqp-client-cli```
 
 ## Config File
 The program must have a valid configuration file in order to run.
@@ -94,6 +95,9 @@ The user can either set the logging parameter in the Configuration File or do it
 Window. Once a log file path is set the program will write out the messages for the exchange that it was set for to the file. The user can also
 add multiple exchanges to a single log file in order to log more than one exchange to a single file. Or you can log them
 into separate files. Logs are written to the file once every second. 
+## Queue's
+amqp-client-cli leaves all existing queue's in place on the server. When subscribing to an exchange a new queue will be
+created, and when unsubscribing the newly created queue will be deleted. 
 ## TODO
   - Clean up and breakdown the UI Struct
   - Let users decide to color messages from certain exchanges
