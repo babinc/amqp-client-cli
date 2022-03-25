@@ -13,6 +13,11 @@ Why Rust:
  - Good error handling
  - I enjoy it more than other languages 😁
 
+## Cargo Installer
+If you have Cargo/Rust installed you can install the program with cargo using the command below:
+
+```cargo install amqp-client-cli```
+
 ## Windows Installer
 [amqp-client-cli-0.1.2-setup.exe](https://s3.us-west-2.amazonaws.com/carmanbabin.com/amqp-client-cli/amqp-client-cli-0.1.2-setup.exe)
 
@@ -27,7 +32,7 @@ Upon starting ```amqp-client-cli``` will look in the following locations for a c
     - Example: ```amqp-client-cli ~/projects/test.json```
 2. (Automatic) Local Path
     - The current directory of execution.
-    - Example: ````amqp-client-cli ./amqp-client-cli.json````
+    - Example: ```amqp-client-cli ./amqp-client-cli.json```
 3. (Automatic) Config Path
    - Linux:   ```/home/Carman/.config/amqp-client-cli.json```
    - Windows: ```C:\Users\Carman\AppData\Roaming\amqp-client-cli.json```
