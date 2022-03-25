@@ -102,5 +102,6 @@ created, and when unsubscribing the newly created queue will be deleted.
   - Clean up and breakdown the UI Struct
   - Let users decide to color messages from certain exchanges
   - Unit Testing
+  - Add ability to publish
   - Add more protocols
       - MQTT
