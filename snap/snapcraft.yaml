@@ -1,0 +1,16 @@
+name: amqp-client-cli
+base: core20 # the base snap is the execution environment for this snap
+version: '0.1.2'
+summary: CLI program for listening to messages on an AMQP message bus
+description: |
+        CLI program for listening to messages on an AMQP Message bus
+grade: stable
+confinement: devmode # use 'strict' once you have the right plugs and slots
+
+architectures:
+    - build-on: [amd64,i386]
+
+parts:
+    syzygy:
+        plugin: rust
+        source: https://github.com/babinc/amqp-client-cli
