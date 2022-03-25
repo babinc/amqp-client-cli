@@ -2,8 +2,13 @@
 name = "amqp-client-cli"
 version = "0.1.2"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+authors = ["Carman Babin <carman.babin@gmail.com>"]
+description = "A CLI program for listening to messages on an AMQP Message bus"
+readme = "README.md"
+repository = "https://github.com/babinc/amqp-client-cli"
+license = "MIT"
+keywords = ["AMQP", "networking", "cli"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 amiquip = "0.4.2"
