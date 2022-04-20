@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::fs::File;
 use std::io::{Read};
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+use std::path::Path;
 use std::process::{Command, Stdio};
 use std::str::FromStr;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -11,7 +12,7 @@ use amiquip::{Auth, Channel, Connection, ConnectionOptions, ConnectionTuning, Co
 use chrono::{Local};
 use crossbeam::channel::{Sender, unbounded};
 use native_tls::{Certificate, Identity, TlsConnector};
-use anyhow::{Result, Context};
+use anyhow::{Result, Context, anyhow};
 use bevy_reflect::Uuid;
 use crate::Config;
 use crate::models::enums::ExchangeTypeSer;
@@ -32,9 +33,11 @@ impl Ampq {
     pub fn new(config: &Config, console_log_sender: Sender<String>, message_sender: Sender<ReadValue>) -> Result<Self> {
         let connection;
         if config.pfx_path.is_some() && config.pem_file.is_some() {
-            let identity = get_identity(config.pfx_path.as_ref().unwrap().as_str());
+            let pfx_path_ref = config.pfx_path.as_ref().with_context(|| format!("Failed to convert pfx_path to reference"))?;
+            let identity = get_identity(pfx_path_ref.as_str())?;
 
-            let cert = get_certificate(config.pem_file.as_ref().unwrap().as_str());
+            let pem_file_ref = config.pem_file.as_ref().with_context(|| format!("Failed to convert pem_file_path to reference"))?;
+            let cert = get_certificate(pem_file_ref.as_str())?;
 
             let socket_addr = SocketAddr::new(IpAddr::V4(Ipv4Addr::from_str(config.host.as_str())?), config.port as u16);
 
@@ -45,9 +48,11 @@ impl Ampq {
                 .add_root_certificate(cert)
                 .build()?;
 
+            let domain_ref = config.domain.as_ref().with_context(|| format!("Failed to convert domain to reference"))?;
+
             connection = Connection::open_tls_stream(
                 tls_connector,
-                config.domain.as_ref().unwrap().as_str(),
+               domain_ref.as_str(),
                 stream,
                 ConnectionOptions::default()
                     .auth(Auth::Plain {
@@ -60,13 +65,13 @@ impl Ampq {
                 ConnectionTuning::default())
                 .with_context(|| "connecting to host")?;
 
-            console_log_sender.send(format!("Secure connection to: {}:{}", config.host, config.port)).unwrap();
+            console_log_sender.send(format!("Secure connection to: {}:{}", config.host, config.port))?;
         }
         else {
             let connection_string = format!("amqp://{}:{}@{}:{}", config.username, config.password, config.host, config.port);
             connection = Connection::insecure_open(connection_string.as_str())?;
 
-            console_log_sender.send(format!("Connected to: {}:{}", config.host, config.port)).unwrap();
+            console_log_sender.send(format!("Connected to: {}:{}", config.host, config.port))?;
         }
 
         Ok(
@@ -82,7 +87,7 @@ impl Ampq {
 
     pub fn add_subscription(&mut self, exchange_name: String, exchange_type: ExchangeType, queue_routing_key: String, selected_id: Uuid) -> Result<()> {
         let thread_sender = self.message_sender.clone();
-        let thread_channel = self.create_channel();
+        let thread_channel = self.create_channel()?;
         let thread_log_sender = self.log_sender.clone();
         let queue_name = self.create_queue_name(exchange_name.as_str());
 
@@ -107,53 +112,65 @@ impl Ampq {
             let exchange = match thread_channel.exchange_declare(exchange_type, exchange_name.clone(), exchange_declare_options) {
                 Ok(res) => res,
                 Err(err) => {
-                    thread_log_sender.send(format!("Exchange error: {}", err.to_string())).unwrap();
+                    thread_log_sender.send(format!("Exchange error: {}", err.to_string())).ok();
                     return;
                 }
             };
 
-            let queue = thread_channel.queue_declare(queue_name.clone(), QueueDeclareOptions { exclusive: false, ..QueueDeclareOptions::default() }).unwrap();
+            match thread_channel.queue_declare(queue_name.clone(), QueueDeclareOptions { exclusive: false, ..QueueDeclareOptions::default() }) {
+                Ok(queue) => {
+                    thread_log_sender.send(format!("Queue Created: {}", queue_name.clone())).ok();
 
-            thread_log_sender.send(format!("Queue Created: {}", queue_name.clone())).unwrap();
+                    queue.bind(&exchange, queue_routing_key, FieldTable::new()).unwrap_or_else(|e| {
+                        thread_log_sender.send(format!("Error binding to queue: {}", e.to_string())).ok();
+                    });
 
-            queue.bind(&exchange, queue_routing_key, FieldTable::new()).unwrap();
+                    match queue.consume(ConsumerOptions { no_ack: true, ..ConsumerOptions::default() }) {
+                        Ok(consumer) => {
+                            loop {
+                                if let Ok(_) = receiver.try_recv() {
+                                    match queue.delete(QueueDeleteOptions::default()) {
+                                        Ok(_) => {
+                                            thread_log_sender.send(format!("Queue Deleted: {}", queue_name)).ok();
+                                        },
+                                        Err(e) => {
+                                            thread_log_sender.send(format!("Error deleting queue: {}", e.to_string())).ok();
+                                        }
+                                    }
+                                    break;
+                                }
 
-            let consumer = queue.consume(ConsumerOptions { no_ack: true, ..ConsumerOptions::default() }).unwrap();
+                                let consumer_message = consumer.receiver().recv();
+                                if let Ok(message) = consumer_message {
+                                    match message {
+                                        ConsumerMessage::Delivery(delivery) => {
+                                            if PAUSE.load(Ordering::SeqCst) == false {
+                                                let body = String::from_utf8_lossy(&delivery.body);
 
-            loop {
-                if let Ok(_) = receiver.try_recv() {
-                    match queue.delete(QueueDeleteOptions::default()) {
-                        Ok(_) => {
-                            thread_log_sender.send(format!("Queue Deleted: {}", queue_name)).ok();
-                        },
-                        Err(e) => {
-                            thread_log_sender.send(format!("Error deleting queue: {}", e.to_string())).ok();
-                        }
-                    }
-                    break;
-                }
+                                                let now = Local::now();
 
-                let consumer_message = consumer.receiver().recv();
-                if let Ok(message) = consumer_message {
-                    match message {
-                        ConsumerMessage::Delivery(delivery) => {
-                            if PAUSE.load(Ordering::SeqCst) == false {
-                                let body = String::from_utf8_lossy(&delivery.body);
-
-                                let now = Local::now();
-
-                                thread_sender.send(ReadValue {
-                                    id: selected_id,
-                                    exchange_name: exchange_name.clone(),
-                                    value: body.to_string(),
-                                    timestamp: now.clone()
-                                }).unwrap();
+                                                thread_sender.send(ReadValue {
+                                                    id: selected_id,
+                                                    exchange_name: exchange_name.clone(),
+                                                    value: body.to_string(),
+                                                    timestamp: now.clone()
+                                                }).ok();
+                                            }
+                                        }
+                                        _ => {
+                                            break;
+                                        }
+                                    }
+                                }
                             }
                         }
-                        _ => {
-                            break;
+                        Err(e) => {
+                            thread_log_sender.send(format!("Error creating consumer: {}", e.to_string())).ok();
                         }
-                    }
+                    };
+                }
+                Err(e) => {
+                    thread_log_sender.send(format!("Error deleting queue: {}", e.to_string())).ok();
                 }
             };
 
@@ -187,44 +204,61 @@ impl Ampq {
         format!("{}.{}", env!("CARGO_PKG_NAME"), exchange_name)
     }
 
-    pub fn create_channel(&mut self) -> Channel {
-        self.connection.open_channel(None).unwrap()
+    pub fn create_channel(&mut self) -> Result<Channel> {
+        let channel = self.connection.open_channel(None)?;
+        Ok(channel)
     }
 
-    pub fn delete_remaining_queue(&mut self) {
-        let channel = self.create_channel();
+    pub fn delete_remaining_queue(&mut self) -> Result<()> {
+        let channel = self.create_channel()?;
         for queue_name in self.queue_names.iter() {
             self.delete_queue(queue_name.as_str(), &channel);
         }
+
+        Ok(())
     }
 
     pub fn delete_queue(&self, queue_name: &str, channel: &Channel) {
         match channel.queue_delete(queue_name, QueueDeleteOptions::default()) {
-            Ok(_) => self.log_sender.send(format!("Queue Deleted: {}", queue_name)).unwrap(),
-            Err(e) => self.log_sender.send(format!("Error deleting queue: {}, error: {}", queue_name, e.to_string())).unwrap()
-        }
+            Ok(_) => self.log_sender.send(format!("Queue Deleted: {}", queue_name)).ok(),
+            Err(e) => self.log_sender.send(format!("Error deleting queue: {}, error: {}", queue_name, e.to_string())).ok()
+        };
     }
 }
 
-fn get_certificate(pem_file: &str) -> Certificate {
-    let output = Command::new("openssl")
-        .arg("x509")
-        .arg("-in")
-        .arg(pem_file)
-        .arg("-inform")
-        .arg("pem")
-        .stderr(Stdio::piped())
-        .output()
-        .unwrap();
+fn get_certificate(pem_file_path: &str) -> Result<Certificate> {
+    let path = Path::new(pem_file_path);
+    if path.exists() {
+        let output = Command::new("openssl")
+            .arg("x509")
+            .arg("-in")
+            .arg(pem_file_path)
+            .arg("-inform")
+            .arg("pem")
+            .stderr(Stdio::piped())
+            .output()
+            .with_context(|| "Error with openssl command".to_string())?;
 
-    let cert = Certificate::from_pem(&output.stdout).unwrap();
-    cert
+        let cert = Certificate::from_pem(&output.stdout)
+            .with_context(|| "Error getting certificate from openssl command output")?;
+
+        Ok(cert)
+    }
+    else {
+        return Err(anyhow!("Pem file path does not exist: {}", pem_file_path));
+    }
 }
 
-fn get_identity(pfx_path: &str) -> Identity {
-    let mut file = File::open(pfx_path).unwrap();
+fn get_identity(pfx_path: &str) -> Result<Identity> {
+    let mut file = File::open(pfx_path)
+        .with_context(|| format!("Error opening pfx file"))?;
+
     let mut identity = vec![];
-    file.read_to_end(&mut identity).unwrap();
-    let identity = Identity::from_pkcs12(&identity, "").unwrap();
-    identity
+    file.read_to_end(&mut identity)
+        .with_context(|| format!("Error reading pfx file"))?;
+
+    let identity = Identity::from_pkcs12(&identity, "")
+        .with_context(|| "Error getting Identity from pfx file".to_string())?;
+
+    Ok(identity)
 }

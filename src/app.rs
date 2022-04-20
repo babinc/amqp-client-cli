@@ -116,31 +116,45 @@ impl App {
                                 KeyCode::Char('l') => ui.show_logs = !ui.show_logs,
                                 KeyCode::Enter => {
                                     let selected_id = ui.get_selected_item_id();
-                                    let mut selected_item = &mut self.config.items
+                                    match &mut self.config.items
                                         .iter_mut()
-                                        .find(|x| x.id == selected_id)
-                                        .unwrap();
+                                        .find(|x| x.id == selected_id) {
+                                        None => self.console_logs.push(format!("Cannot find selected item in config.items")),
+                                        Some(selected_item) => {
+                                            if selected_item.selected_state == SelectedState::Unselected {
+                                                selected_item.selected_state = SelectedState::PendingSubscription;
+                                            }
+                                            else if selected_item.selected_state == SelectedState::Subscribed {
+                                                selected_item.selected_state = SelectedState::Unselected;
+                                            }
+                                            else if selected_item.selected_state == SelectedState::PendingSubscription {
+                                                selected_item.selected_state = SelectedState::Unselected;
+                                                match self.ampq.create_channel() {
+                                                    Ok(channel) => {
+                                                        let queue_name = self.ampq.create_queue_name(selected_item.exchange_name.as_str());
+                                                        self.ampq.delete_queue(queue_name.as_str(), &channel);
+                                                    }
+                                                    Err(e) => {
+                                                        self.console_logs.push(format!("Error creating channel: {}", e.to_string()));
+                                                    }
+                                                }
+                                            }
 
-                                    if selected_item.selected_state == SelectedState::Unselected {
-                                        selected_item.selected_state = SelectedState::PendingSubscription;
-                                    }
-                                    else if selected_item.selected_state == SelectedState::Subscribed {
-                                        selected_item.selected_state = SelectedState::Unselected;
-                                    }
-                                    else if selected_item.selected_state == SelectedState::PendingSubscription {
-                                        selected_item.selected_state = SelectedState::Unselected;
-                                        let channel = self.ampq.create_channel();
-                                        let queue_name = self.ampq.create_queue_name(selected_item.exchange_name.as_str());
-                                        self.ampq.delete_queue(queue_name.as_str(), &channel);
-                                    }
-
-                                    self.ampq.change_subscription(&selected_item, selected_id);
+                                            self.ampq.change_subscription(&selected_item, selected_id);
+                                        }
+                                    };
                                 },
                                 KeyCode::Char('e') => {
                                     self.active_window = Windows::Options;
                                     let selected_id = ui.get_selected_item_id();
-                                    let selected_item = self.config.items.iter().find(|x| x.id == selected_id).unwrap();
-                                    ui.show_options_popup( selected_item.clone())
+                                    match self.config.items
+                                        .iter()
+                                        .find(|x| x.id == selected_id) {
+                                        None => self.console_logs.push(format!("Cannot find selected item in config.items")),
+                                        Some(selected_item) => {
+                                            ui.show_options_popup( selected_item.clone())
+                                        }
+                                    };
                                 },
                                 KeyCode::Char('p') => {
                                     self.mode = Mode::Scroll;
@@ -220,9 +234,15 @@ impl App {
                     KeyCode::Enter => {
                         self.active_window = Windows::Main;
                         let selected_id = ui.get_selected_item_id();
-                        let selected_item = self.config.items.iter_mut().find(|x| x.id == selected_id).unwrap();
-                        *selected_item = ui.options_exchange.clone();
-                        ui.hide_options_popup();
+                        match self.config.items
+                            .iter_mut()
+                            .find(|x| x.id == selected_id) {
+                            None => self.console_logs.push(format!("Cannot find selected item in config.items")),
+                            Some(selected_item) => {
+                                *selected_item = ui.options_exchange.clone();
+                                ui.hide_options_popup();
+                            }
+                        }
                     },
                     _ => {}
                 }
@@ -282,7 +302,7 @@ impl App {
     }
 
     fn exit(&mut self) {
-        self.ampq.delete_remaining_queue();
+        self.ampq.delete_remaining_queue().ok();
         self.config.save_config().ok();
     }
 }

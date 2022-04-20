@@ -41,8 +41,7 @@ impl FileLogger {
             let mut file = OpenOptions::new()
                 .write(true)
                 .append(true)
-                .open(file_data.0)
-                .unwrap();
+                .open(file_data.0)?;
 
             for line in file_data.1 {
                 writeln!(file, "{}", line.to_string())?;
