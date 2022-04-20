@@ -421,7 +421,7 @@ impl Ui {
             .widths(&width_constraints)
             .column_spacing(1);
 
-        let area = Self::centered_rect(25, 15, frame.size());
+        let area = Self::center_rect_absolute(45, 8, frame.size());
         frame.render_widget(Clear, area);
         frame.render_widget(table, area);
     }
@@ -656,6 +656,33 @@ impl Ui {
             )
             .split(popup_layout[1])[1]
     }
+
+    fn center_rect_absolute(absolute_x: u16, absolute_y: u16, r: Rect) -> Rect {
+        let popup_layout = Layout::default()
+            .direction(Direction::Vertical)
+            .constraints(
+                [
+                    Constraint::Length((r.height - absolute_y) / 2),
+                    Constraint::Length(absolute_y),
+                    Constraint::Length((r.height - absolute_y) / 2),
+                ]
+                    .as_ref(),
+            )
+            .split(r);
+
+        Layout::default()
+            .direction(Direction::Horizontal)
+            .constraints(
+                [
+                    Constraint::Length((r.width - absolute_x) / 2),
+                    Constraint::Length(absolute_x),
+                    Constraint::Length((r.width - absolute_x) / 2),
+                ]
+                    .as_ref(),
+            )
+            .split(popup_layout[1])[1]
+    }
+
 
     fn center_input(percent_x: u16, r: Rect) -> Rect {
         let popup_layout = Layout::default()
