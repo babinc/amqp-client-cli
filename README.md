@@ -19,7 +19,7 @@ If you have Cargo/Rust installed you can install the program with cargo using th
 ```cargo install amqp-client-cli```
 
 ## Windows Installer
-[amqp-client-cli-0.1.2-setup.exe](https://s3.us-west-2.amazonaws.com/carmanbabin.com/amqp-client-cli/amqp-client-cli-0.1.4-setup.exe)
+[amqp-client-cli-0.1.4-setup.exe](https://s3.us-west-2.amazonaws.com/carmanbabin.com/amqp-client-cli/amqp-client-cli-0.1.4-setup.exe)
 
 ## Linux Installer
 
