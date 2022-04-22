@@ -62,8 +62,7 @@ impl Ampq {
                     .heartbeat(30)
                     .channel_max(1024)
                     .connection_timeout(Some(Duration::from_millis(10_000))),
-                ConnectionTuning::default())
-                .with_context(|| "connecting to host")?;
+                ConnectionTuning::default())?;
 
             console_log_sender.send(format!("Secure connection to: {}:{}", config.host, config.port))?;
         }
