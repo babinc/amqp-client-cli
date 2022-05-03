@@ -1,6 +1,6 @@
 # amqp-client-cli
 ***
-![](https://s3.us-west-2.amazonaws.com/carmanbabin.com/amqp-client-cli/amqp-client-cli.gif)
+![](https://s3.us-west-2.amazonaws.com/www.carmanbabin.com/amqp-client-cli/amqp-client-cli.gif)
 
 Why CLI and not GUI:
  - Message bus servers often do not have a desktop environment installed, therefore in order to be a good
@@ -19,7 +19,7 @@ If you have Cargo/Rust installed you can install the program with cargo using th
 ```cargo install amqp-client-cli```
 
 ## Windows Installer
-[amqp-client-cli-0.1.5-setup.exe](https://s3.us-west-2.amazonaws.com/carmanbabin.com/amqp-client-cli/amqp-client-cli-0.1.5-setup.exe)
+[amqp-client-cli-0.1.5-setup.exe](https://s3.us-west-2.amazonaws.com/www.carmanbabin.com/amqp-client-cli/amqp-client-cli-0.1.5-setup.exe)
 
 ## Linux Installer
 
