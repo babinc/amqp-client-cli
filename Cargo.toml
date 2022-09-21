@@ -1,6 +1,6 @@
 [package]
 name = "amqp-client-cli"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 authors = ["Carman Babin <carman.babin@gmail.com>"]
 description = "A CLI program for listening to messages on an AMQP Message bus"
