@@ -6,9 +6,9 @@ use std::path::Path;
 use std::process::{Command, Stdio};
 use std::str::FromStr;
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::thread;
+use std::{fs, thread};
 use std::time::Duration;
-use amiquip::{Auth, Channel, Connection, ConnectionOptions, ConnectionTuning, ConsumerMessage, ConsumerOptions, ExchangeDeclareOptions, ExchangeType, FieldTable, QueueDeclareOptions, QueueDeleteOptions};
+use amiquip::{Auth, Channel, Connection, ConnectionOptions, ConnectionTuning, ConsumerMessage, ConsumerOptions, ExchangeDeclareOptions, ExchangeType, FieldTable, Publish, QueueDeclareOptions, QueueDeleteOptions};
 use chrono::{Local};
 use crossbeam::channel::{Sender, unbounded};
 use native_tls::{Certificate, Identity, TlsConnector};
@@ -175,6 +175,29 @@ impl Ampq {
 
             thread_log_sender.send(format!("Unsubscribed from: {}", exchange_name)).ok();
         });
+
+        Ok(())
+    }
+
+    pub fn publish(&mut self, exchange_options: &ExchangeOptions) -> Result<()> {
+        let exchange_type = match &exchange_options.exchange_type {
+            ExchangeTypeSer::Direct => ExchangeType::Direct,
+            ExchangeTypeSer::Fanout => ExchangeType::Fanout,
+            ExchangeTypeSer::Topic => ExchangeType::Topic,
+            ExchangeTypeSer::Headers => ExchangeType::Headers,
+        };
+
+        let exchange_declare_options = ExchangeDeclareOptions {
+            durable: true,
+            auto_delete: false,
+            internal: false,
+            arguments: Default::default()
+        };
+
+        let channel = self.create_channel()?;
+        let exchange = channel.exchange_declare(exchange_type, exchange_options.exchange_name.clone(), exchange_declare_options)?;
+        let contents = fs::read_to_string(exchange_options.publish_file.clone())?;
+        exchange.publish(Publish::new(contents.as_bytes(), exchange_options.queue_routing_key.clone()))?;
 
         Ok(())
     }

@@ -75,7 +75,7 @@ impl Ui {
             multi_select_list_items: vec![],
             options_exchange_type: ExchangeTypeSer::Direct,
             selector_length: 0,
-            selector_ids: vec![]
+            selector_ids: vec![],
         }
     }
 
@@ -421,7 +421,7 @@ impl Ui {
             .widths(&width_constraints)
             .column_spacing(1);
 
-        let area = Self::center_rect_absolute(45, 8, frame.size());
+        let area = Self::center_rect_absolute(55, 9, frame.size());
         frame.render_widget(Clear, area);
         frame.render_widget(table, area);
     }

@@ -150,11 +150,11 @@ impl App {
                                     match self.config.items
                                         .iter()
                                         .find(|x| x.id == selected_id) {
-                                        None => self.console_logs.push(format!("Cannot find selected item in config.items")),
-                                        Some(selected_item) => {
-                                            ui.show_options_popup( selected_item.clone())
-                                        }
-                                    };
+                                            None => self.console_logs.push(format!("Cannot find selected item in config.items")),
+                                            Some(selected_item) => {
+                                                ui.show_options_popup( selected_item.clone())
+                                            }
+                                        };
                                 },
                                 KeyCode::Char('p') => {
                                     self.mode = Mode::Scroll;
@@ -174,6 +174,21 @@ impl App {
                                         Ok(_) => self.console_logs.push(format!("Config File Saved: {}", self.config.path.as_str())),
                                         Err(e) => self.console_logs.push(format!("Error Saving Config File: {}", e.to_string()))
                                     }
+                                }
+                                KeyCode::Char('n') => {
+                                    self.active_window = Windows::Options;
+                                    let selected_id = ui.get_selected_item_id();
+                                    match self.config.items
+                                        .iter()
+                                        .find(|x| x.id == selected_id) {
+                                        None => self.console_logs.push(format!("Cannot find selected item in config.items")),
+                                        Some(selected_item) => {
+                                            self.ampq.publish(selected_item)
+                                                .unwrap_or_else(|e| {
+                                                    self.console_logs.push(format!("Error publishing message: {}", e.to_string()));
+                                                });
+                                        }
+                                    };
                                 }
                                 _ => {}
                             }

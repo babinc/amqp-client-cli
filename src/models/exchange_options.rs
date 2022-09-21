@@ -9,7 +9,8 @@ pub struct ExchangeOptionsSer {
     pub queue_routing_key: Option<String>,
     pub alias: Option<String>,
     pub pretty: Option<bool>,
-    pub log_file: Option<String>
+    pub log_file: Option<String>,
+    pub publish_file: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Reflect)]
@@ -22,6 +23,7 @@ pub struct ExchangeOptions {
     pub alias: String,
     pub pretty: bool,
     pub log_file: String,
+    pub publish_file: String,
     pub selected_state: SelectedState
 }
 
@@ -35,6 +37,7 @@ impl Default for ExchangeOptions {
             alias: "".to_string(),
             pretty: false,
             log_file: "".to_string(),
+            publish_file: "".to_string(),
             selected_state: SelectedState::Unselected
         }
     }

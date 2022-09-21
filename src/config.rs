@@ -50,6 +50,7 @@ impl Config {
                         alias: exchange_ser.alias.unwrap_or_default(),
                         pretty: exchange_ser.pretty.unwrap_or_default(),
                         log_file: exchange_ser.log_file.unwrap_or_default(),
+                        publish_file: exchange_ser.publish_file.unwrap_or_default(),
                         selected_state: SelectedState::Unselected
                     };
 
@@ -101,6 +102,11 @@ impl Config {
                 log_file = Some(item.log_file.clone());
             }
 
+            let mut publish_file = None;
+            if item.publish_file.len() > 0 {
+                publish_file = Some(item.publish_file.clone());
+            }
+
             let mut queue_routing_key = None;
             if item.queue_routing_key.len() > 0 {
                 queue_routing_key = Some(item.queue_routing_key.clone());
@@ -112,7 +118,8 @@ impl Config {
                 queue_routing_key,
                 alias,
                 pretty,
-                log_file
+                log_file,
+                publish_file
             });
         }
         
