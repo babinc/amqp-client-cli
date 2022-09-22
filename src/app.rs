@@ -175,21 +175,8 @@ impl App {
                                         Err(e) => self.console_logs.push(format!("Error Saving Config File: {}", e.to_string()))
                                     }
                                 }
-                                KeyCode::Char('n') => {
-                                    self.active_window = Windows::Options;
-                                    let selected_id = ui.get_selected_item_id();
-                                    match self.config.items
-                                        .iter()
-                                        .find(|x| x.id == selected_id) {
-                                        None => self.console_logs.push(format!("Cannot find selected item in config.items")),
-                                        Some(selected_item) => {
-                                            self.ampq.publish(selected_item)
-                                                .unwrap_or_else(|e| {
-                                                    self.console_logs.push(format!("Error publishing message: {}", e.to_string()));
-                                                });
-                                        }
-                                    };
-                                }
+                                KeyCode::Char('n') => self.send_publish_to_amqp(ui),
+                                KeyCode::Char('P') => self.send_publish_to_amqp(ui),
                                 _ => {}
                             }
                         }
@@ -304,6 +291,21 @@ impl App {
         }
 
         Ok(false)
+    }
+
+    fn send_publish_to_amqp(&mut self, ui: &mut Ui) {
+        let selected_id = ui.get_selected_item_id();
+        match self.config.items
+            .iter()
+            .find(|x| x.id == selected_id) {
+            None => self.console_logs.push(format!("Cannot find selected item in config.items")),
+            Some(selected_item) => {
+                self.ampq.publish(selected_item)
+                    .unwrap_or_else(|e| {
+                        self.console_logs.push(format!("Error publishing message: {}", e.to_string()));
+                    });
+            }
+        };
     }
 
     fn on_tick(&mut self) {

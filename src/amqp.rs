@@ -199,6 +199,8 @@ impl Ampq {
         let contents = fs::read_to_string(exchange_options.publish_file.clone())?;
         exchange.publish(Publish::new(contents.as_bytes(), exchange_options.queue_routing_key.clone()))?;
 
+        self.log_sender.send(format!("Published contents of {}, to {}", exchange_options.publish_file.clone(), exchange_options.exchange_name.clone()))?;
+
         Ok(())
     }
 
