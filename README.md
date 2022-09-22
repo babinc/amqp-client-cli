@@ -82,6 +82,13 @@ Upon starting ```amqp-client-cli``` will look in the following locations for a c
 }
 
 ```
+## SSL (Secure)
+In you wish to connect to a server with SSL using a ```pfx``` and ```pem``` file OpenSSL must be installed on the computer. After installing OpenSSL add it to your ```$PATH```.
+Amqp-client-cli will be using the command to connect to the server securely so amqp-client-cli must have access to the command. 
+### Windows Users
+Windows users can download the full version of openssl [here](https://slproweb.com/products/Win32OpenSSL.html)
+### Linux Users
+I'm sure your smart enough to figure out how to install openssl and add it to your path on your own 👌
 ## Publish
 Press ```e``` to open the option's pane for a particular exchange. Then set the ```publish_file``` option to a file containing the contents of which you would like to
 publish on the selected exchange. Once set press ```Enter``` to set the options until the main window is showing again. With the desired exchange
@@ -107,6 +114,7 @@ into separate files. Logs are written to the file once every second.
 amqp-client-cli leaves all existing queue's in place on the server. When subscribing to an exchange a new queue will be
 created, and when unsubscribing the newly created queue will be deleted. 
 ## TODO
+  - Connect to SSL server without needing access to the OpenSSL program 
   - Clean up and breakdown the UI Struct
   - Let users decide to color messages from certain exchanges
   - Unit Testing
