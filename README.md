@@ -83,8 +83,8 @@ Upon starting ```amqp-client-cli``` will look in the following locations for a c
 
 ```
 ## SSL (Secure)
-In you wish to connect to a server with SSL using a ```pfx``` and ```pem``` file OpenSSL must be installed on the computer. After installing OpenSSL add it to your ```$PATH```.
-Amqp-client-cli will be using the command to connect to the server securely so amqp-client-cli must have access to the command. 
+In you wish to connect to a server with SSL using a ```pfx``` and ```pem``` file, OpenSSL must be installed on the computer. After installing OpenSSL add it to your ```$PATH```.
+Amqp-client-cli will be using the ```openssl``` command to connect to the server securely so amqp-client-cli must have access to the command. 
 ### Windows Users
 Windows users can download the full version of openssl [here](https://slproweb.com/products/Win32OpenSSL.html)
 ### Linux Users
