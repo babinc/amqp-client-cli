@@ -2,15 +2,15 @@
 ***
 ![](https://s3.us-west-2.amazonaws.com/www.carmanbabin.com/amqp-client-cli/amqp-client-cli.gif)
 
-Why CLI and not GUI:
+#### Why CLI and not GUI:
  - Message bus servers often do not have a desktop environment installed, therefore in order to be a good
 debugging tool it needs to run without a GUI.
  - Terminal is cooler than GUI 😜
  
-Why Rust:
+#### Why Rust:
  - Cross-platform support
  - Great performance
- - Good error handling
+ - Great error handling
  - I enjoy it more than other languages 😁
 
 ## Cargo Installer
@@ -82,6 +82,14 @@ Upon starting ```amqp-client-cli``` will look in the following locations for a c
 }
 
 ```
+## Publish
+Press ```e``` to open the option's pane for a particular exchange. Then set the ```publish_file``` option to a file containing the contents of which you would like to
+publish on the selected exchange. Once set press ```Enter``` to set the options until the main window is showing again. With the desired exchange
+still selected on the left hand pane (indicated by the ```>``` character) press ```n``` or ```shift+p``` to publish the contents of the file to the exchange.
+\
+\
+![](https://s3.us-west-2.amazonaws.com/www.carmanbabin.com/amqp-client-cli/publish_file_example-min.png)
+
 ## Edit
 The user can set edit options for an exchange by pressing the ```E``` key. Each exchange has its own set of options. Or the
 user can set the options in the config file. When the program exits the options that were set while using the
@@ -102,6 +110,5 @@ created, and when unsubscribing the newly created queue will be deleted.
   - Clean up and breakdown the UI Struct
   - Let users decide to color messages from certain exchanges
   - Unit Testing
-  - Add ability to publish
   - Add more protocols
       - MQTT
