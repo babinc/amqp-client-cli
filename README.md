@@ -13,6 +13,13 @@ debugging tool it needs to run without a GUI.
  - Great error handling
  - I enjoy it more than other languages 😁
 
+## Build
+``` bash
+git clone -b v0.1.6 git@github.com:babinc/amqp-client-cli.git
+cd amqp-client-cli
+cargo build --release
+```
+
 ## Cargo Installer
 If you have Cargo/Rust installed you can install the program with cargo using the command below:
 
