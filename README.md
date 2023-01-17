@@ -120,6 +120,8 @@ into separate files. Logs are written to the file once every second.
 ## Queue's
 amqp-client-cli leaves all existing queue's in place on the server. When subscribing to an exchange a new queue will be
 created, and when unsubscribing the newly created queue will be deleted. 
+## VIM
+Feel free to use vim key binding when navigating 
 ## TODO
   - Connect to SSL server without needing access to the OpenSSL program 
   - Clean up and breakdown the UI Struct
