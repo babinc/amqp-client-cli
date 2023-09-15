@@ -67,7 +67,7 @@ impl Ampq {
             console_log_sender.send(format!("Secure connection to: {}:{}", config.host, config.port))?;
         }
         else {
-            let connection_string = format!("amqp://{}:{}@{}:{}", config.username, config.password, config.host, config.port);
+            let connection_string = format!("{}://{}:{}@{}:{}", config.protocol, config.username, config.password, config.host, config.port);
             connection = Connection::insecure_open(connection_string.as_str())?;
 
             console_log_sender.send(format!("Connected to: {}:{}", config.host, config.port))?;
