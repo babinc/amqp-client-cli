@@ -16,7 +16,8 @@ struct ConfigSer {
     pub pfx_path: Option<String>,
     pub pem_file: Option<String>,
     pub domain: Option<String>,
-    pub items: Vec<ExchangeOptionsSer>
+    pub items: Vec<ExchangeOptionsSer>,
+    pub protocol: Option<String>,
 }
 
 pub struct Config {
@@ -28,7 +29,8 @@ pub struct Config {
     pub pem_file: Option<String>,
     pub domain: Option<String>,
     pub items: Vec<ExchangeOptions>,
-    pub path: String
+    pub path: String,
+    pub protocol: String,
 }
 
 impl Config {
@@ -66,7 +68,8 @@ impl Config {
                     pem_file: config_ser.pem_file,
                     domain: config_ser.domain,
                     items: exchanges,
-                    path: file_path.to_string_lossy().to_string()
+                    path: file_path.to_string_lossy().to_string(),
+                    protocol: config_ser.protocol.unwrap_or("amqp".to_owned())
                 };
 
                 return Ok(config);
@@ -131,7 +134,8 @@ impl Config {
             pfx_path: self.pfx_path.clone(),
             pem_file: self.pem_file.clone(),
             domain: self.domain.clone(),
-            items: exchanges_ser
+            items: exchanges_ser,
+            protocol: self.protocol.clone().into(),
         };
         
         let json = serde_json::to_string_pretty(&config_ser)?;
