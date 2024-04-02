@@ -5,7 +5,7 @@
 #### Why CLI and not GUI:
  - Message bus servers often do not have a desktop environment installed, therefore in order to be a good
 debugging tool it needs to run without a GUI.
- - Terminal is cooler than GUI 😜
+ - Terminal > GUI 😜
  
 #### Why Rust:
  - Cross-platform support
