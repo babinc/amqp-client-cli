@@ -28,7 +28,7 @@ If you have Cargo/Rust installed you can install the program with cargo using th
 ## Windows Installer
 [amqp-client-cli-0.1.6-setup.exe](https://s3.us-west-2.amazonaws.com/www.carmanbabin.com/amqp-client-cli/amqp-client-cli-0.1.6-setup.exe)
 
-## Linux Installer
+## Linux Installer (snap doesn't have the latest version)
 
 ```sudo snap install amqp-client-cli```
 
