@@ -60,6 +60,7 @@ Upon starting ```amqp-client-cli``` will look in the following locations for a c
   "pfx_path": null,
   "pem_file": null,
   "domain": "test-domain",
+  "vhost": "vhost",
   "items": [
     {
       "exchange_name": "test_program.incoming",
