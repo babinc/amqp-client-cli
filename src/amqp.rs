@@ -61,13 +61,14 @@ impl Ampq {
                     })
                     .heartbeat(30)
                     .channel_max(1024)
+                    .virtual_host(config.vhost.clone().unwrap_or_default())
                     .connection_timeout(Some(Duration::from_millis(10_000))),
                 ConnectionTuning::default())?;
 
             console_log_sender.send(format!("Secure connection to: {}:{}", config.host, config.port))?;
         }
         else {
-            let connection_string = format!("{}://{}:{}@{}:{}", config.protocol, config.username, config.password, config.host, config.port);
+            let connection_string = format!("{}://{}:{}@{}:{}/{}", config.protocol, config.username, config.password, config.host, config.port, config.vhost.clone().unwrap_or_default());
             connection = Connection::insecure_open(connection_string.as_str())?;
 
             console_log_sender.send(format!("Connected to: {}:{}", config.host, config.port))?;
